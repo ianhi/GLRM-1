@@ -7,7 +7,7 @@ Abstract loss class and canonical loss functions.
 
 # Abstract Loss class
 class Loss(object):
-    def __init__(self, A): return
+    def __init__(self ): return
     def loss(self, A, U): raise NotImplementedError("Override me!")
     def encode(self, A): return A # default
     def decode(self, A): return A # default
@@ -16,7 +16,7 @@ class Loss(object):
 
 # Canonical loss functions
 class QuadraticLoss(Loss):
-    def loss(self, A, U): return cp.norm(cp.Constant(A) - U, "fro")/2.0
+    def loss(self, A, U): return cp.norm(cp.Constant(A) - U)
     def __str__(self): return "quadratic loss"
 
 class HuberLoss(Loss):
