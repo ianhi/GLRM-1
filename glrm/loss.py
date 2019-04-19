@@ -47,3 +47,15 @@ class OrdinalLoss(Loss):
                 cp.pos(-U + (b+1)*ones(A.shape))) for b in range(int(self.Amin), int(self.Amax))))
     def decode(self, A): return maximum(minimum(A.round(), self.Amax), self.Amin)
     def __str__(self): return "ordinal loss"
+
+    
+class OneVsAllLoss(Loss):
+    def loss(self, A, U,):
+        A_bool = A==1
+        mask_col = mask[:,columns]
+        obj = cp.sum(cp.pos(1-U[A_bool]))
+        obj += cp.sum(cp.pos(1+U_col[~A_bool]))
+    def __str__(self): return "scaled one vs all loss"
+    def __call__(self, A, U, columns,sigma_arr): return self.loss(A, U, columns,sigma_arr)
+    def decode(self, Z):
+        return cp.sign(Z).value

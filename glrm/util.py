@@ -5,6 +5,7 @@ import matplotlib.cm as cm
 from numpy.ma import masked_where
 from numpy import maximum, minimum
 import cvxpy as cp
+import numpy as np
 
 def pplot(As, titles):
     # setup
@@ -94,14 +95,15 @@ def oneHot(A,columns,max_index = None,):
         
     could probably also call the sklearn onehotencoder
     """
-    A_col = A[:,columns]
+    A_col = A[:,columns].astype(np.int)
     if max_index is None:
         max_index = A_col.max(axis=0)
-        print(max_index)
+#         print(max_index)
     elif len(max_index) != len(columns):
         raise ValueError('Yikes len(max_index) != len(columns)')
     else:
-        max_index = np.asarray(max_index)
+        max_index = np.asarray(max_index).astype(np.int)
+#     print(max_index)
     m = A_col.shape[0]
     one_hot = []
     for i in range(len(columns)):
