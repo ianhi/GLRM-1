@@ -16,7 +16,7 @@ class Loss(object):
 
 # Canonical loss functions
 class QuadraticLoss(Loss):
-    def loss(self, A, U): return cp.norm(cp.Constant(A) - U)
+    def loss(self, A, U): return cp.sum_squares(A - U)
     def __str__(self): return "quadratic loss"
 
 class HuberLoss(Loss):
