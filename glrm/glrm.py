@@ -2,7 +2,7 @@ import cvxpy as cp
 import numpy as np
 from util import missing2mask
 from convergence import *
-
+import sys
 
 class GLRM:
     def __init__(self, A,loss_list, k,regX=None, regY=None,missing_list =None,scale=True):
@@ -15,6 +15,7 @@ class GLRM:
         self.regY = regY
         self.converged = Convergence()
         self.vals = []
+        self.niter = 0
         if missing_list is not None:
             self.mask = missing2mask(A.shape,missing_list)
         else:
@@ -98,13 +99,18 @@ class GLRM:
         if verbose:
             verboseX = True
             verboseY = True
+        print('iter \t objY')
         while not self.converged:
+
             self.converged.objX.append(self.probX.solve(solver,verbose=verbose))
             self.Xp.value = np.copy(self.Xv.value)
 
             self.converged.objY.append(self.probY.solve(solver,verbose=verbose))
             self.Yp.value = np.copy(self.Yv.value)
             self.vals.append(self.objY.value)
+            sys.stdout.write(f"\r {self.niter} \t {np.round(self.converged.objY[-1],2)}" )
+            sys.stdout.flush()
+            self.niter+=1
 
         return self.Xp.value, self.Yp.value
     def predict(self):
