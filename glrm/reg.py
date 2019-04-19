@@ -10,7 +10,7 @@ Abstract reg class and canonical regularizer functions.
 # Abstract Reg class
 class Reg(object):
     # shape indicates how quickly it grows: 0 [flat], 1 [linear], 2 [quadratic+]
-    def reg(self, X): raise NotImplementedError("Override me!")
+    def reg(self ): raise NotImplementedError("Override me!")
     def __init__(self, nu=1): self.nu = nu # XXX think of a better way to handle nu?
     def __str__(self): return "GLRM Reg: override me!"
     def __call__(self, X): return self.reg(X)
@@ -24,7 +24,7 @@ class LinearReg(Reg):
     def __str__(self): return "linear reg"
 
 class QuadraticReg(Reg):
-    def reg(self, X): return self.nu*cp.sum(X)
+    def reg(self, X): return self.nu*cp.sum_squares(X)
     def __str__(self): return "quadratic reg"
 
 class NonnegativeReg(Reg):
