@@ -20,15 +20,15 @@ class ZeroReg(Reg):
     def __str__(self): return "zero reg"
 
 class LinearReg(Reg):
-    def reg(self, X): return self.nu*cp.norm1(X)
+    def reg(self, X): return self.nu*cp.norm(X)
     def __str__(self): return "linear reg"
 
 class QuadraticReg(Reg):
-    def reg(self, X): return self.nu*cp.sum_squares(X)
+    def reg(self, X): return self.nu*cp.sum(X)
     def __str__(self): return "quadratic reg"
 
 class NonnegativeReg(Reg):
-    def reg(self, X): return 1e10*cp.sum_entries(cp.neg(X))
+    def reg(self, X): return 1e10*cp.sum(cp.neg(X))
     def __str__(self): return "nonnegative reg"
 
 # XXX 
