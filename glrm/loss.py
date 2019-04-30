@@ -1,5 +1,6 @@
 import cvxpy as cp
 from numpy import ones, maximum, minimum, sign, floor, ceil
+from util import *
 
 """
 Abstract loss class and canonical loss functions.
@@ -9,10 +10,16 @@ Abstract loss class and canonical loss functions.
 class Loss(object):
     def __init__(self ): return
     def loss(self, A, U): raise NotImplementedError("Override me!")
-    def encode(self, A): return A # default
+    def encode(self, A,mask=None): return A,mask # default
     def decode(self, A): return A # default
     def __str__(self): return "GLRM Loss: override me!"
     def __call__(self, A, U): return self.loss(A, U)
+    def calc_scaling(self,A,mask):
+        alpha = cp.Variable()
+        prob = cp.Problem(cp.Minimize(self.loss(A[mask],alpha)))
+        sigma = prob.solve()/len(A)
+        mu = alpha.value
+        return mu,sigma
 
 # Canonical loss functions
 class QuadraticLoss(Loss):
@@ -50,12 +57,29 @@ class OrdinalLoss(Loss):
 
     
 class OneVsAllLoss(Loss):
-    def loss(self, A, U,):
+    def loss(self, A, U):
         A_bool = A==1
-        mask_col = mask[:,columns]
         obj = cp.sum(cp.pos(1-U[A_bool]))
-        obj += cp.sum(cp.pos(1+U_col[~A_bool]))
+        obj += cp.sum(cp.pos(1+U[~A_bool]))
+        return obj
     def __str__(self): return "scaled one vs all loss"
-    def __call__(self, A, U, columns,sigma_arr): return self.loss(A, U, columns,sigma_arr)
+    def __call__(self, A,U): return self.loss(A, U)
+    def encode(self,A,mask): 
+#         print(mask)
+        np.tile(mask,int(A.max()))
+        return oneHotTransform(A), np.tile(mask,int(A.max()+1))
     def decode(self, Z):
-        return cp.sign(Z).value
+        return np.argmax(Z,axis=1)[:,None]
+    def calc_scaling(self,A,mask):
+        vals, counts = np.unique(A,return_counts=True)
+        mu = vals[np.argmax(counts)]
+        max_index = A.max()
+        mu = np.argmax(A.sum(axis=0))
+        mu = oneHotTransform(np.array([[mu]]),max_index=[A.shape[1]-1])
+        tot = 0
+        for i in range(len(A)):
+            if mask[i].all():
+#                 print(A[i:i+1].shape)
+                tot += self.loss(A[i:i+1],mu)
+        
+        return mu,tot.value/len(A)

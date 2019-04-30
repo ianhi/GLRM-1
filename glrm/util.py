@@ -95,6 +95,7 @@ def oneHot(A,columns,max_index = None,):
         
     could probably also call the sklearn onehotencoder
     """
+    columns = np.asarray(columns)
     A_col = A[:,columns].astype(np.int)
     if max_index is None:
         max_index = A_col.max(axis=0)
@@ -108,13 +109,21 @@ def oneHot(A,columns,max_index = None,):
     one_hot = []
     for i in range(len(columns)):
         one_hot.append(np.zeros(m,max_index[i]+1))
-        one_hot[-1] = np.eye(max_index[i]+1)[A_col[:,i]]
+        mat_size = max_index[i]+1
+        arr = -np.ones((mat_size,mat_size))
+        arr[np.diag_indices_from(arr)]=1
+#         print(arr)
+        one_hot[-1] = arr[A_col[:,i]]
     return one_hot
 
-def oneHotTransform(A,columns,max_index = None):
+def oneHotTransform(A,columns=None,max_index = None):
     """
     does one hot encoding of the categorical values and transforms the array
     """
+    if columns is None:
+        columns = np.arange(A.shape[1])
+    else:
+        columns = np.asarray(columns)
     one_hot = oneHot(A,columns,max_index)
     #stack the onehot stuff 
     return np.hstack([A[:,i][:,None] if not i in columns else one_hot[np.abs(columns-i).argmax()] for i in range(A.shape[1])])
