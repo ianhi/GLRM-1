@@ -24,8 +24,9 @@ paper](http://www.stanford.edu/~boyd/papers/glrm.html).
 This project provides a GLRM object for automatically computing factors X and Y,
 decoding XY back into the appropriate domain, and imputing missing entries.
 
-## Installation
-python setup.py install
+~~## Installation
+python setup.py install~~
+# N.B. below here may have been changed by me. I'll update when I've stabilized.
 
 ## Basic usage
 The source code for similar problems can be found in the 'examples' folder.
