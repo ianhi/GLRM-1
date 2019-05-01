@@ -1,3 +1,10 @@
+##TODO - ian
+1. Add fxn to decode rows of Y  
+2. kernelization?  
+3. modernize ordinal loss
+4. pytorch version? for fun?
+
+
 ## GLRM
 
 GLRM is a python package for exploratory data analysis using Generalized Low
