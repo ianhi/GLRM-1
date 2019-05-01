@@ -190,6 +190,10 @@ class GLRM:
 #         return self.Xp.value, self.Yp.value
     def Z(self):
         return (self.Xp @ self.Yp).value
+    def B(self):
+        return np.hstack([a[0] for a in self._loss_list])
+    def XY(self):
+        return self.Xv.value,self.Yv.value
     def predict(self):
         Z = self.Xv.value @ self.Yv.value
         out = []
@@ -201,3 +205,4 @@ class GLRM:
 #         return (self.Xp @ self.Yp).value+self.mu
     def plot_convergence(self,**kwargs):
         self.converged.plot(**kwargs)
+        
