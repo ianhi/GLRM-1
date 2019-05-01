@@ -11,7 +11,7 @@ different data types (e.g., Boolean, ordinal, interval).
 GLRM easily handles missing data by choosing a loss of zero for the missing
 entries of A.
 
-For more information on GLRMs, see [our
+For more information on GLRMs, see [their
 paper](http://www.stanford.edu/~boyd/papers/glrm.html).
 
 This project provides a GLRM object for automatically computing factors X and Y,
