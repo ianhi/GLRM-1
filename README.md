@@ -1,4 +1,4 @@
-##TODO - ian
+## TODO - ian
 1. Add fxn to decode rows of Y  
 2. kernelization?  
 3. modernize ordinal loss
