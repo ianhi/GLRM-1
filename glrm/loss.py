@@ -31,15 +31,6 @@ class HuberLoss(Loss):
     def loss(self, A, U): return cp.sum(cp.huber(cp.Constant(A) - U, self.a))
     def __str__(self): return "huber loss"
 
-# class FractionalLoss(Loss):
-#     PRECISION = 1e-10
-#     def loss(self, A, U):
-#         B = cp.Constant(A)
-#         U = cp.max_elemwise(U, self.PRECISION) # to avoid dividing by zero
-#         return cp.max_elemwise(cp.mul_elemwise(cp.inv_pos(cp.pos(U)), B-U), \
-#         return maximum((A - U)/U, (U - A)/A)
-# 
-
 class HingeLoss(Loss):
     def loss(self, A, U): return cp.sum(cp.pos(ones(A.shape)-cp.multiply(cp.Constant(A), U)))
     def decode(self, A): return sign(A) # return back to Boolean
