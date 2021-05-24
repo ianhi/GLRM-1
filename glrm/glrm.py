@@ -1,11 +1,11 @@
 import cvxpy as cp
 import numpy as np
-from util import missing2mask
-from convergence import *
+from .util import missing2mask
+from .convergence import *
 import sys
 
 class GLRM:
-    def __init__(self, A,loss_list, k,regX=None, regY=None,missing_list =None,scale=True):
+    def __init__(self, A,loss_list, k,regX=None, regY=None,missing_list =None, converge = None, scale=True):
         self.scale = scale
         self.k = k
         self.A = A
@@ -13,7 +13,10 @@ class GLRM:
         self.missing_list = missing_list
         self.regX = regX
         self.regY = regY
-        self.converged = Convergence()
+        if converge == None: 
+            self.converged = Convergence()
+        else: 
+            self.converged = converge
         self.vals = []
         self.niter = 0
         if missing_list is not None:
@@ -29,11 +32,12 @@ class GLRM:
     def calc_scaling(self):
         self.mu = np.zeros(self.A.shape[1])
         self.sigma = np.zeros(self.A.shape[1])
-        for columns, loss_fxn in self.loss_list:
-            for col in columns:
+        columns = self.A.shape[1]
+        for loss_fxn in self.loss_list:
+            for col in range(columns):
                 elems = self.A[:,col][self.mask[:,col]]
                 alpha =  cp.Variable()
-                prob = cp.Problem(cp.Minimize(loss_fxn(elems, alpha)))
+                prob = cp.Problem(cp.Minimize(loss_fxn.loss(loss_fxn, elems, alpha * np.ones(elems.shape))))
                 self.sigma[col] = prob.solve()/len(elems) #len(elems)-1 per the paper?
                 self.mu[col] = alpha.value
         
@@ -60,8 +64,9 @@ class GLRM:
         self.objY = 0
         Zx = self.Xv @ self.Yp
         Zy = self.Xp @ self.Yv
-        for columns,loss_fxn in self.loss_list:
-            for col in columns:
+        columns = self.A.shape[1]
+        for loss_fxn in self.loss_list:
+            for col in range(columns):
                 Acol = self.A[:,col][self.mask[:,col]]
                 Zxcol = Zx[:,col][self.mask[:,col]]
                 Zycol = Zy[:,col][self.mask[:,col]]
@@ -69,8 +74,8 @@ class GLRM:
 #                 Acol
 #                 print(col)
 #                 print((Acol,Zx[:,col]+self.mu[col].shape)
-                self.objX += loss_fxn(Acol,Zxcol+self.mu[col])/self.sigma[col]
-                self.objY += loss_fxn(Acol,Zycol+self.mu[col])/self.sigma[col]
+                self.objX += loss_fxn.loss(loss_fxn, Acol,Zxcol+self.mu[col])/self.sigma[col]
+                self.objY += loss_fxn.loss(loss_fxn, Acol,Zycol+self.mu[col])/self.sigma[col]
                 
         if self.regX is not None:
             self.objX += self.regX(self.Xv)
