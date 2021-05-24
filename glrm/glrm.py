@@ -1,7 +1,7 @@
 import cvxpy as cp
 import numpy as np
-from util import missing2mask
-from convergence import *
+from .util import missing2mask
+from .convergence import *
 import sys
 
 
@@ -64,17 +64,16 @@ class GLRM:
         self.objY = 0
         Zx = self.Xv @ self.Yp
         Zy = self.Xp @ self.Yv
-        for columns, loss_fxn in self.loss_list:
-            for col in columns:
-                Acol = self.A[:, col][self.mask[:, col]]
-                Zxcol = Zx[:, col][self.mask[:, col]]
-                Zycol = Zy[:, col][self.mask[:, col]]
+        for col, loss_fxn in self.loss_list:
+            Acol = self.A[:, col][self.mask[:, col]]
+            Zxcol = Zx[:, col][self.mask[:, col]]
+            Zycol = Zy[:, col][self.mask[:, col]]
 
-                #                 Acol
-                #                 print(col)
-                #                 print((Acol,Zx[:,col]+self.mu[col].shape)
-                self.objX += loss_fxn(Acol, Zxcol + self.mu[col]) / self.sigma[col]
-                self.objY += loss_fxn(Acol, Zycol + self.mu[col]) / self.sigma[col]
+            #                 Acol
+            #                 print(col)
+            #                 print((Acol,Zx[:,col]+self.mu[col].shape)
+            self.objX += loss_fxn(Acol, Zxcol + self.mu[col]) / self.sigma[col]
+            self.objY += loss_fxn(Acol, Zycol + self.mu[col]) / self.sigma[col]
 
         if self.regX is not None:
             self.objX += self.regX(self.Xv)
