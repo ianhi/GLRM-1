@@ -1,6 +1,6 @@
 import cvxpy as cp
 import numpy as np
-from util import missing2mask
+from .util import missing2mask
 from convergence import *
 import sys
 
