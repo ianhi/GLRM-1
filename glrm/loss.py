@@ -1,6 +1,6 @@
 import cvxpy as cp
 from numpy import ones, maximum, minimum, sign, floor, ceil
-from util import *
+from .util import *
 
 """
 Abstract loss class and canonical loss functions.
